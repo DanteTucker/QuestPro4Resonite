@@ -12,24 +12,24 @@ namespace QuestProModule
     public class QuestProMod : ResoniteMod
     {
 		[AutoRegisterConfigKey]
-		private readonly static ModConfigurationKey<string> QuestProIP = new ModConfigurationKey<string>("quest_pro_IP", "Quest Pro IP. This can be found in ALXR's settings, requires a restart to take effect", () => "127.0.0.1");
+		private readonly static ModConfigurationKey<string> QuestProIP = new("quest_pro_IP", "Quest Pro IP. This can be found in ALXR's settings, requires a restart to take effect", () => "127.0.0.1");
 
         [AutoRegisterConfigKey]
-        private readonly static ModConfigurationKey<float> EyeOpennessExponent = new ModConfigurationKey<float>("quest_pro_eye_open_exponent", "Exponent to apply to eye openness.  Can be updated at runtime.  Useful for applying different curves for how open your eyes are.", () => 1.0f);
+        private readonly static ModConfigurationKey<float> EyeOpennessExponent = new("quest_pro_eye_open_exponent", "Exponent to apply to eye openness.  Can be updated at runtime.  Useful for applying different curves for how open your eyes are.", () => 1.0f);
 
         [AutoRegisterConfigKey]
-        private readonly static ModConfigurationKey<float> EyeWideMultiplier = new ModConfigurationKey<float>("quest_pro_eye_wide_multiplier", "Multiplier to apply to eye wideness.  Can be updated at runtime.  Useful for multiplying the amount your eyes can widen by.", () => 1.0f);
+        private readonly static ModConfigurationKey<float> EyeWideMultiplier = new("quest_pro_eye_wide_multiplier", "Multiplier to apply to eye wideness.  Can be updated at runtime.  Useful for multiplying the amount your eyes can widen by.", () => 1.0f);
 
         [AutoRegisterConfigKey]
-        private static readonly ModConfigurationKey<float> EyeMovementMultiplier = new ModConfigurationKey<float>("quest_pro_eye_movement_multiplier", "Multiplier to adjust the movement range of the user's eyes.  Can be updated at runtime.", () => 1.0f);
+        private static readonly ModConfigurationKey<float> EyeMovementMultiplier = new("quest_pro_eye_movement_multiplier", "Multiplier to adjust the movement range of the user's eyes.  Can be updated at runtime.", () => 1.0f);
 
         public static ALXRModule qpm;
 
         static ModConfiguration _config;
 
-        public static float EyeOpenExponent = 1.0f;
-        public static float EyeWideMult = 1.0f;
-        public static float EyeMoveMulti = 1.0f;
+        public static float EyeOpenExponent => _config.GetValue(EyeOpennessExponent);
+        public static float EyeWideMult => _config.GetValue(EyeWideMultiplier);
+        public static float EyeMoveMulti => _config.GetValue(EyeMovementMultiplier);
 
         public override string Name => "QuestPro4Resonite";
 		public override string Author => "dfgHiatus & Geenz & Sinduy";
@@ -38,12 +38,7 @@ namespace QuestProModule
 		public override void OnEngineInit()
 		{
             _config = GetConfiguration();
-
-            _config.OnThisConfigurationChanged += OnConfigurationChanged;
-
-            _config.TryGetValue(EyeOpennessExponent, out EyeOpenExponent);
-            _config.TryGetValue(EyeWideMultiplier, out EyeWideMult);
-            _config.TryGetValue(EyeMovementMultiplier, out EyeMoveMulti);
+            _config.Save(true);
 
             new Harmony("net.dfgHiatus.QuestPro4Resonite").PatchAll();
 		}
@@ -69,38 +64,6 @@ namespace QuestProModule
                 {
                     Warn("Module failed to initiallize.");
                     Warn(ex.ToString());
-                }
-            }
-        }
-
-        private void OnConfigurationChanged(ConfigurationChangedEvent @event)
-        {
-            if (@event.Label == "NeosModSettings variable change") return;
-            UniLog.Log($"Var changed! {@event.Label}");
-            if (@event.Key == EyeOpennessExponent)
-            {
-                float openExp = 1.0f;
-                if (@event.Config.TryGetValue(EyeOpennessExponent, out openExp))
-                {
-                    EyeOpenExponent = openExp;
-                }
-            }
-
-            if (@event.Key == EyeOpennessExponent)
-            {
-                float wideMult = 1.0f;
-                if (@event.Config.TryGetValue(EyeWideMultiplier, out wideMult))
-                {
-                    EyeWideMult = wideMult;
-                }
-            }
-
-            if (@event.Key == EyeMovementMultiplier)
-            {
-                float moveMulti = 1.0f;
-                if (@event.Config.TryGetValue(EyeMovementMultiplier, out moveMulti))
-                {
-                    EyeMoveMulti = moveMulti;
                 }
             }
         }
