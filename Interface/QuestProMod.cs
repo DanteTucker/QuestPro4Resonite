@@ -41,6 +41,10 @@ namespace QuestProModule
 
             _config.OnThisConfigurationChanged += OnConfigurationChanged;
 
+            _config.TryGetValue(EyeOpennessExponent, out EyeOpenExponent);
+            _config.TryGetValue(EyeWideMultiplier, out EyeWideMult);
+            _config.TryGetValue(EyeMovementMultiplier, out EyeMoveMulti);
+
             new Harmony("net.dfgHiatus.QuestPro4Resonite").PatchAll();
 		}
 
